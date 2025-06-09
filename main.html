@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Background layers for smooth gradient transition -->
+    <div class="gradient-bg" id="bg1"></div>
+    <div class="gradient-bg" id="bg2"></div>
+
+    <div class="container">
+        <h1>Weather App</h1>
+        <div id="weather-form">
+            <input type="text" id="search-bar" placeholder="Enter city name" spellcheck="false" required>
+            <button id="submit"><img src="search.png" alt="Search"></button>
+        </div>
+        <div id="weather">
+            <img src="rain.png" alt="Weather Icon" id="weather-icon">
+            <h1 class="temp"></h1>
+            <h2 class="city"></h2>
+            <div class="details">
+                <div class="col">
+                    <img src="humidity.png" alt="humidity">
+                    <div>
+                        <p class="humidity"></p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="wind.png" alt="Wind">
+                    <div>
+                        <pre class="wind"></pre>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    window.addEventListener("load", () => {
+        checkweather("Rajahmundry");
+    });
+
+    const apikey = "cb531aee2e2022dd6919756dba6d47c4";
+    const apiurl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+    var searchbar = document.querySelector("#search-bar");
+    var searchbutton = document.querySelector("#submit");
+
+    let current = "bg1";
+
+    function smoothGradientTransition(newGradient) {
+        const bg1 = document.getElementById("bg1");
+        const bg2 = document.getElementById("bg2");
+
+        if (current === "bg1") {
+            bg2.style.background = newGradient;
+            bg2.style.opacity = 1;
+            bg1.style.opacity = 0;
+            current = "bg2";
+        } else {
+            bg1.style.background = newGradient;
+            bg1.style.opacity = 1;
+            bg2.style.opacity = 0;
+            current = "bg1";
+        }
+    }
+
+    async function checkweather(cityname) {
+        document.getElementById("search-bar").value = "";
+        const response = await fetch(apiurl + cityname + `&appid=${apikey}`);
+        var data = await response.json();
+        console.log(data);
+
+        document.querySelector(".city").innerHTML = data.name;
+        document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°c";
+        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+        let weather = data.weather[0].main.toLowerCase();
+
+        if (weather == "clouds") {
+            document.querySelector("#weather-icon").src = "clouds.png";
+            smoothGradientTransition("linear-gradient(to bottom, #bdc3c7, #2c3e50)");
+        }
+        else if (weather == "clear") {
+            document.querySelector("#weather-icon").src = "clear.png";
+            smoothGradientTransition("linear-gradient(to bottom, #56ccf2, #2f80ed)");
+        }
+        else if (weather == "rain") {
+            document.querySelector("#weather-icon").src = "rain.webp";
+            smoothGradientTransition("linear-gradient(to bottom, #373b44, #4286f4)");
+        }
+        else if (weather == "drizzle") {
+            document.querySelector("#weather-icon").src = "drizzle.png";
+            smoothGradientTransition("linear-gradient(to bottom, #89f7fe, #66a6ff)");
+        }
+        else if (weather == "mist") {
+            document.querySelector("#weather-icon").src = "mist.png";
+            smoothGradientTransition("linear-gradient(to bottom, #757f9a, #d7dde8)");
+        }
+        else if (weather == "snow") {
+            document.querySelector("#weather-icon").src = "snow.png";
+            smoothGradientTransition("linear-gradient(to bottom, #e6dada, #274046)");
+        }
+        else {
+            smoothGradientTransition("linear-gradient(to bottom, grey, skyblue)");
+        }
+    }
+
+    searchbutton.addEventListener("click", () => {
+        if (searchbar.value.length == 0) {
+            alert("Please enter a city name");
+            return;
+        }
+        checkweather(searchbar.value);
+    });
+</script>
+</body>
+</html>
