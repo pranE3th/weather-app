@@ -75,9 +75,10 @@
     function passwordcheck(password){
         if (password === "password123"){
             window.alert("Password correct, Dev mode activated!.");
-            document.getElementById("password").outerHTML ='<input style="width:12vw; text-align:center;" id="background-changer" type="text" placeholder="Enter background weather" spellcheck="false">';
+            document.getElementById("password").outerHTML =
+                '<input style="flex:1; text-align:center; max-width:90vw; min-width:120px; width:100%;" id="background-changer" type="text" placeholder="Enter background weather" spellcheck="false">';
             return;
-
+//style="flex:1; text-align:center; max-width:90vw; min-width:120px; width:100%;"
         }else{
             window.alert("Incorrect password, please try again.");
             document.querySelector("#password").value = "";
@@ -85,7 +86,7 @@
         }
     }
     function devmodeactivate(){
-        document.getElementById("devmode").outerHTML ='<input style="width:12vw; text-align:center;" id="password" type="password" placeholder="Enter password" spellcheck="false">';
+        document.getElementById("devmode").outerHTML ='<input style="flex:1; text-align:center; max-width:90vw; min-width:120px; width:100%;" id="password" type="password" placeholder="Enter password" spellcheck="false">';
         
     }
     function change(weather){
@@ -148,7 +149,7 @@
         if (searchbar.value.length == 0) {
             if (bgChangerInput && bgChangerInput.value.length > 0) {//without this check bgChangerInput the password logic fails because
               console.log(bgChangerInput.value);//when i click the button it will create #password input
-              change(bgChangerInput.value);//so when i type password and search it will not work because here it checks background-changer input
+              change(bgChangerInput.value.toLowerCase());//so when i type password and search it will not work because here it checks background-changer input
               return;//but background-changer input is not created yet so accessing .value from non existing element will throw an error and the process will stop
           }
           else if (passwordInput && passwordInput.value.length > 0) {
