@@ -17,6 +17,9 @@
             <input type="text" id="search-bar" placeholder="Enter city name" spellcheck="false" required>
             <button id="submit"><img src="search.png" alt="Search"></button>
         </div>
+        <div id="developer-features">
+            <button id="devmode" onclick="devmodeactivate()">Dev mode</button>
+        </div>
         <div id="weather">
             <img src="rain.png" alt="Weather Icon" id="weather-icon">
             <h1 class="temp"></h1>
@@ -69,24 +72,23 @@
             current = "bg1";
         }
     }
-
-    async function checkweather(cityname) {
-        document.getElementById("search-bar").value = "";
-        const response = await fetch(apiurl + cityname + `&appid=${apikey}`);
-        var data = await response.json();
-        console.log(data);
-        if (!response.ok) {
-            alert("City not found");
+    function passwordcheck(password){
+        if (password === "password123"){
+            window.alert("Password correct, Dev mode activated!.");
+            document.getElementById("password").outerHTML ='<input style="width:12vw; text-align:center;" id="background-changer" type="text" placeholder="Enter background weather" spellcheck="false">';
             return;
-                        }
 
-        document.querySelector(".city").innerHTML = data.name;
-        document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°c";
-        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
-        document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
-
-        let weather = data.weather[0].main.toLowerCase();
-
+        }else{
+            window.alert("Incorrect password, please try again.");
+            document.querySelector("#password").value = "";
+            return;
+        }
+    }
+    function devmodeactivate(){
+        document.getElementById("devmode").outerHTML ='<input style="width:12vw; text-align:center;" id="password" type="password" placeholder="Enter password" spellcheck="false">';
+        
+    }
+    function change(weather){
         if (weather == "clouds") {
             document.querySelector("#weather-icon").src = "clouds.png";
             smoothGradientTransition("linear-gradient(to bottom, #bdc3c7, #2c3e50)");
@@ -116,12 +118,47 @@
         }
     }
 
-    searchbutton.addEventListener("click", () => {
-        if (searchbar.value.length == 0) {
-            alert("Please enter a city name");
+    async function checkweather(cityname) {
+        document.getElementById("search-bar").value = "";
+        const response = await fetch(apiurl + cityname + `&appid=${apikey}`);
+        var data = await response.json();
+        console.log(data);
+        if(data.cod==404){
+            window.alert("City not found, please try again.");
             return;
         }
-        checkweather(searchbar.value);
+
+        document.querySelector(".city").innerHTML = data.name;
+        document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°c";
+        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+        let weather = data.weather[0].main.toLowerCase();
+        change(weather);
+    
+
+        
+    }
+
+    searchbutton.addEventListener("click", () => {
+        
+        const passwordInput = document.querySelector("#password");
+        const bgChangerInput = document.querySelector("#background-changer");
+
+        if (searchbar.value.length == 0) {
+            if (bgChangerInput && bgChangerInput.value.length > 0) {//without this check bgChangerInput the password logic fails because
+              console.log(bgChangerInput.value);//when i click the button it will create #password input
+              change(bgChangerInput.value);//so when i type password and search it will not work because here it checks background-changer input
+              return;//but background-changer input is not created yet so accessing .value from non existing element will throw an error and the process will stop
+          }
+          else if (passwordInput && passwordInput.value.length > 0) {
+              passwordcheck(passwordInput.value);
+              return;
+          }
+          alert("Please enter a city name");
+          return;
+}
+
     });
 </script>
 </body>
